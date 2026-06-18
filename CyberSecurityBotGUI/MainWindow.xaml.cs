@@ -22,11 +22,10 @@ namespace CyberSecurityBotGUI
             InitializeComponent();
 
             PlayGreeting();
-            ShowAscii();
 
             ChatBox.AppendText(
                 "Bot: Welcome to the Cybersecurity Awareness Assistant!\n" +
-                "I'm here to help you learn about online safety.\n\n" +
+                "I'm here to help you stay safe online.\n\n" +
                 "What is your name?\n\n");
 
             InputBox.Focus();
@@ -53,7 +52,12 @@ namespace CyberSecurityBotGUI
 
                 if (!File.Exists(path))
                 {
-                    ChatBox.AppendText("Bot: Voice file not found.\n\n");
+                    MessageBox.Show(
+                        "Voice file not found:\n" + path,
+                        "File Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                     return;
                 }
 
@@ -65,24 +69,16 @@ namespace CyberSecurityBotGUI
             }
             catch (Exception ex)
             {
-                ChatBox.AppendText("Bot: Voice error: " + ex.Message + "\n\n");
+                MessageBox.Show(
+                    "Voice error:\n" + ex.Message,
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
             }
         }
 
-        // ASCII ART
-        private void ShowAscii()
-        {
-            ChatBox.AppendText(
-@"========================================
-      CYBERSECURITY AWARENESS BOT
-========================================
-        STAY SAFE ONLINE
-========================================
-
-");
-        }
-
-        // SEND BUTTON
+        // SEND BUTTON LOGIC
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
             string input = InputBox.Text.Trim();
@@ -94,29 +90,27 @@ namespace CyberSecurityBotGUI
 
             string lower = input.ToLower();
 
-            // STEP 1 - GET USER NAME
+            // STEP 1: NAME
             if (!nameCaptured)
             {
                 userName = input;
                 nameCaptured = true;
 
-                ChatBox.AppendText(
-                    $"Bot: Nice to meet you {userName}! What cybersecurity topic interests you most?\n\n");
+                ChatBox.AppendText($"Bot: Nice to meet you {userName}! What topic interests you?\n\n");
 
                 InputBox.Clear();
                 ChatBox.ScrollToEnd();
                 return;
             }
 
-            // STEP 2 - GET FAVOURITE TOPIC
+            // STEP 2: TOPIC
             if (!topicCaptured)
             {
                 favouriteTopic = lower;
                 topicCaptured = true;
                 lastTopic = lower;
 
-                ChatBox.AppendText(
-                    $"Bot: Great! I'll remember that you're interested in {favouriteTopic}, {userName}.\n\n");
+                ChatBox.AppendText($"Bot: Great! I'll remember that you like {favouriteTopic}.\n\n");
 
                 InputBox.Clear();
                 ChatBox.ScrollToEnd();
@@ -125,32 +119,26 @@ namespace CyberSecurityBotGUI
 
             string response;
 
-            // MEMORY RECALL
-            if (lower.Contains("remember") ||
-                lower.Contains("what do i like"))
+            // MEMORY
+            if (lower.Contains("remember") || lower.Contains("what do i like"))
             {
-                response = $"You told me that you're interested in {favouriteTopic}, {userName}.";
+                response = $"You like {favouriteTopic}, {userName}.";
             }
-
-            // FOLLOW-UP CONVERSATION FLOW
             else if (lower.Contains("tell me more") ||
                      lower.Contains("another tip") ||
                      lower.Contains("explain more"))
             {
-                var handler = bot.GetResponseHandler();
-                response = handler(lastTopic);
+                response = bot.GetResponse(lastTopic);
             }
-
             else
             {
-                var handler = bot.GetResponseHandler();
-                response = handler(input);
+                response = bot.GetResponse(input);
 
                 if (lower.Contains("phishing") ||
                     lower.Contains("password") ||
+                    lower.Contains("scam") ||
                     lower.Contains("privacy") ||
-                    lower.Contains("malware") ||
-                    lower.Contains("scam"))
+                    lower.Contains("malware"))
                 {
                     lastTopic = lower;
                 }

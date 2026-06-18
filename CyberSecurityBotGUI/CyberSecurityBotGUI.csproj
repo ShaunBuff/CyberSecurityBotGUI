@@ -9,12 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Greeting.wav" />
+    <None Remove="Assets\Greeting.wav" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include=".github\workflows\dotnet.yml" />
-    <Content Include="Greeting.wav">
+    <Content Include="Assets\Greeting.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
