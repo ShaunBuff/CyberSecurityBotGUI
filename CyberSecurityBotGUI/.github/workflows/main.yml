@@ -1,10 +1,10 @@
-﻿name: .NET Build CI
+name: .NET Build CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
 
 jobs:
   build:
