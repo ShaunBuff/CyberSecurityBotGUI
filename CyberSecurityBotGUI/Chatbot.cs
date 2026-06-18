@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// Added dictionary-based response system
+
 namespace CyberSecurityBotGUI
 {
     public class Chatbot
