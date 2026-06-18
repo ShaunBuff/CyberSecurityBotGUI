@@ -13,13 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include=".github\workflow\dotnet.yml" />
     <Content Include="Greeting.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include=".github\" />
   </ItemGroup>
 
 </Project>
