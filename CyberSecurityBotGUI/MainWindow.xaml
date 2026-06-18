@@ -1,0 +1,59 @@
+﻿<Window x:Class="CyberSecurityBotGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Cybersecurity Awareness Chatbot"
+        Height="650"
+        Width="600"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 🔰 ASCII HEADER (FULL FIXED) -->
+        <TextBlock Grid.Row="0"
+                   FontFamily="Consolas"
+                   FontSize="13"
+                   FontWeight="Bold"
+                   TextAlignment="Center"
+                   HorizontalAlignment="Center"
+                   TextWrapping="NoWrap"
+                   Margin="5"
+                   Text="
+╔════════════════════════════════════════════╗
+║      CYBERSECURITY AWARENESS BOT          ║
+║           SAFE ONLINE LEARNING            ║
+╚════════════════════════════════════════════╝"/>
+
+        <!-- 💬 CHAT AREA -->
+        <TextBox x:Name="ChatBox"
+                 Grid.Row="1"
+                 Margin="5"
+                 IsReadOnly="True"
+                 TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto"
+                 AcceptsReturn="True"/>
+
+        <!-- ⌨ INPUT AREA -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    Margin="5">
+
+            <TextBox x:Name="InputBox"
+                     Width="420"
+                     Height="35"/>
+
+            <Button x:Name="SendButton"
+                    Content="Send"
+                    Width="100"
+                    Height="35"
+                    Margin="10,0,0,0"
+                    Click="SendButton_Click"/>
+        </StackPanel>
+
+    </Grid>
+</Window>
