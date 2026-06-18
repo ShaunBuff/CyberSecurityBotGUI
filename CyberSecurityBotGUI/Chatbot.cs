@@ -14,7 +14,7 @@ namespace CyberSecurityBotGUI
 
         private Random random = new Random();
 
-        // 📚 Dictionary + Lists (REQUIRED COLLECTIONS MARK)
+        // 📚 Dictionary+Lists (REQUIRED COLLECTIONS MARK)
         private Dictionary<string, List<string>> responses;
 
         public Chatbot()
