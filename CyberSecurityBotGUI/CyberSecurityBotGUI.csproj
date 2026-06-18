@@ -15,7 +15,7 @@
   <ItemGroup>
     <Content Include=".github\workflows\dotnet.yml" />
     <Content Include="Greeting.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

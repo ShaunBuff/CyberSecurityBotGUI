@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.IO;
+using System.Media;
+using System.Windows;
 
 namespace CyberSecurityBotGUI
 {
@@ -17,10 +20,44 @@ namespace CyberSecurityBotGUI
         {
             InitializeComponent();
 
-            // 🎤 Voice already working (keep your existing WAV code if present)
-            ChatBox.AppendText("Cybersecurity Bot: Hello! What is your name?\n\n");
+            PlayGreeting();
+            ShowAscii();
+
+            ChatBox.AppendText("Bot: Hello! What is your name?\n\n");
         }
 
+        // 🎵 VOICE GREETING
+        private void PlayGreeting()
+        {
+            try
+            {
+                string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "greeting.wav");
+
+                if (File.Exists(path))
+                {
+                    SoundPlayer player = new SoundPlayer(path);
+                    player.Play();
+                }
+            }
+            catch
+            {
+                ChatBox.AppendText("Bot: (Voice failed to load)\n\n");
+            }
+        }
+
+        // ASCII ART FIXED FOR WPF
+        private void ShowAscii()
+        {
+            ChatBox.AppendText(
+@"=================================
+   CYBERSECURITY AWARENESS BOT
+=================================
+   Stay Safe Online Always
+=================================
+" + "\n\n");
+        }
+
+        // 🔘 BUTTON CLICK
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
             string input = InputBox.Text.Trim();
@@ -32,51 +69,49 @@ namespace CyberSecurityBotGUI
 
             string lower = input.ToLower();
 
-            // 👤 NAME STEP
+            // 👤 NAME
             if (!nameCaptured)
             {
                 userName = input;
                 nameCaptured = true;
 
-                ChatBox.AppendText($"Bot: Nice to meet you {userName}! What cybersecurity topic interests you?\n\n");
+                ChatBox.AppendText($"Bot: Nice to meet you {userName}! What topic interests you?\n\n");
 
                 InputBox.Clear();
-                ChatBox.ScrollToEnd();
                 return;
             }
 
-            // 📌 TOPIC STEP
+            // 📌 TOPIC
             if (!topicCaptured)
             {
                 favouriteTopic = lower;
                 topicCaptured = true;
                 lastTopic = lower;
 
-                ChatBox.AppendText($"Bot: Got it {userName}, I’ll remember you like {favouriteTopic}.\n\n");
+                ChatBox.AppendText($"Bot: Got it {userName}, I’ll remember {favouriteTopic}.\n\n");
 
                 InputBox.Clear();
-                ChatBox.ScrollToEnd();
                 return;
             }
 
             string response;
 
-            // 🔄 CONVERSATION FLOW (FOLLOW-UPS)
-            if (lower.Contains("tell me more") ||
-                lower.Contains("another tip") ||
-                lower.Contains("explain more") ||
+            // 🔄 FOLLOW-UP FLOW
+            if (lower.Contains("more") ||
+                lower.Contains("explain") ||
+                lower.Contains("another") ||
                 lower.Contains("why") ||
                 lower.Contains("how"))
             {
-                response = bot.ProcessInput(lastTopic);
+                response = bot.GetResponse(lastTopic);
             }
             else
             {
-                response = bot.ProcessInput(input);
+                var handler = bot.GetResponseHandler();
+                response = handler(input);
 
                 if (lower.Contains("phishing") ||
                     lower.Contains("password") ||
-                    lower.Contains("malware") ||
                     lower.Contains("privacy") ||
                     lower.Contains("scam"))
                 {
@@ -90,10 +125,9 @@ namespace CyberSecurityBotGUI
                 response = $"You like {favouriteTopic}, {userName}.";
             }
 
-            ChatBox.AppendText($"Bot: {response}\n\n");
+            ChatBox.AppendText("Bot: " + response + "\n\n");
 
             InputBox.Clear();
-            ChatBox.ScrollToEnd();
         }
     }
 }
