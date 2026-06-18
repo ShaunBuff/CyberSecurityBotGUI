@@ -2,6 +2,7 @@
 using System.IO;
 using System.Media;
 using System.Windows;
+using System.Windows.Input;
 
 namespace CyberSecurityBotGUI
 {
@@ -23,41 +24,65 @@ namespace CyberSecurityBotGUI
             PlayGreeting();
             ShowAscii();
 
-            ChatBox.AppendText("Bot: Hello! What is your name?\n\n");
+            ChatBox.AppendText(
+                "Bot: Welcome to the Cybersecurity Awareness Assistant!\n" +
+                "I'm here to help you learn about online safety.\n\n" +
+                "What is your name?\n\n");
+
+            InputBox.Focus();
         }
 
-        // 🎵 VOICE GREETING
+        // ENTER KEY SUPPORT
+        private void InputBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                SendButton_Click(sender, e);
+            }
+        }
+
+        // VOICE GREETING
         private void PlayGreeting()
         {
             try
             {
-                string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "greeting.wav");
+                string path = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "Assets",
+                    "greeting.wav");
 
-                if (File.Exists(path))
+                if (!File.Exists(path))
                 {
-                    SoundPlayer player = new SoundPlayer(path);
+                    ChatBox.AppendText("Bot: Voice file not found.\n\n");
+                    return;
+                }
+
+                using (SoundPlayer player = new SoundPlayer(path))
+                {
+                    player.Load();
                     player.Play();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                ChatBox.AppendText("Bot: (Voice failed to load)\n\n");
+                ChatBox.AppendText("Bot: Voice error: " + ex.Message + "\n\n");
             }
         }
 
-        // ASCII ART FIXED FOR WPF
+        // ASCII ART
         private void ShowAscii()
         {
             ChatBox.AppendText(
-@"=================================
-   CYBERSECURITY AWARENESS BOT
-=================================
-   Stay Safe Online Always
-=================================
-" + "\n\n");
+@"========================================
+      CYBERSECURITY AWARENESS BOT
+========================================
+        STAY SAFE ONLINE
+========================================
+
+");
         }
 
-        // 🔘 BUTTON CLICK
+        // SEND BUTTON
         private void SendButton_Click(object sender, RoutedEventArgs e)
         {
             string input = InputBox.Text.Trim();
@@ -69,42 +94,53 @@ namespace CyberSecurityBotGUI
 
             string lower = input.ToLower();
 
-            // 👤 NAME
+            // STEP 1 - GET USER NAME
             if (!nameCaptured)
             {
                 userName = input;
                 nameCaptured = true;
 
-                ChatBox.AppendText($"Bot: Nice to meet you {userName}! What topic interests you?\n\n");
+                ChatBox.AppendText(
+                    $"Bot: Nice to meet you {userName}! What cybersecurity topic interests you most?\n\n");
 
                 InputBox.Clear();
+                ChatBox.ScrollToEnd();
                 return;
             }
 
-            // 📌 TOPIC
+            // STEP 2 - GET FAVOURITE TOPIC
             if (!topicCaptured)
             {
                 favouriteTopic = lower;
                 topicCaptured = true;
                 lastTopic = lower;
 
-                ChatBox.AppendText($"Bot: Got it {userName}, I’ll remember {favouriteTopic}.\n\n");
+                ChatBox.AppendText(
+                    $"Bot: Great! I'll remember that you're interested in {favouriteTopic}, {userName}.\n\n");
 
                 InputBox.Clear();
+                ChatBox.ScrollToEnd();
                 return;
             }
 
             string response;
 
-            // 🔄 FOLLOW-UP FLOW
-            if (lower.Contains("more") ||
-                lower.Contains("explain") ||
-                lower.Contains("another") ||
-                lower.Contains("why") ||
-                lower.Contains("how"))
+            // MEMORY RECALL
+            if (lower.Contains("remember") ||
+                lower.Contains("what do i like"))
             {
-                response = bot.GetResponse(lastTopic);
+                response = $"You told me that you're interested in {favouriteTopic}, {userName}.";
             }
+
+            // FOLLOW-UP CONVERSATION FLOW
+            else if (lower.Contains("tell me more") ||
+                     lower.Contains("another tip") ||
+                     lower.Contains("explain more"))
+            {
+                var handler = bot.GetResponseHandler();
+                response = handler(lastTopic);
+            }
+
             else
             {
                 var handler = bot.GetResponseHandler();
@@ -113,21 +149,18 @@ namespace CyberSecurityBotGUI
                 if (lower.Contains("phishing") ||
                     lower.Contains("password") ||
                     lower.Contains("privacy") ||
+                    lower.Contains("malware") ||
                     lower.Contains("scam"))
                 {
                     lastTopic = lower;
                 }
             }
 
-            // 🧠 MEMORY
-            if (lower.Contains("what do i like") || lower.Contains("remember"))
-            {
-                response = $"You like {favouriteTopic}, {userName}.";
-            }
-
             ChatBox.AppendText("Bot: " + response + "\n\n");
 
             InputBox.Clear();
+            ChatBox.ScrollToEnd();
+            InputBox.Focus();
         }
     }
 }

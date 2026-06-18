@@ -5,48 +5,93 @@ namespace CyberSecurityBotGUI
 {
     public class Chatbot
     {
-        // 📦 COLLECTIONS (MARKS REQUIREMENT)
+        // Delegate
+        public delegate string ResponseHandler(string input);
+
+        private Random random = new Random();
+
+        // Dictionary (Collections Requirement)
         private Dictionary<string, string> responses = new Dictionary<string, string>()
         {
-            { "phishing", "Phishing is when attackers trick you into giving personal info." },
-            { "password", "Use strong, unique passwords and a password manager." },
-            { "privacy", "Protect your personal data and review privacy settings." },
-            { "scam", "Scams often create urgency. Always verify before acting." },
-            { "malware", "Avoid unknown downloads and keep antivirus updated." }
+            { "privacy", "Protect your personal data and regularly review your privacy settings." },
+            { "malware", "Keep your antivirus updated and avoid downloading files from unknown sources." }
         };
 
-        // 🎭 DELEGATE (MARKS REQUIREMENT)
-        public delegate string ResponseHandler(string input);
+        // Random phishing tips
+        private List<string> phishingTips = new List<string>()
+        {
+            "Always check the sender's email address before clicking links.",
+            "Be cautious of emails requesting personal information.",
+            "Look for spelling mistakes and suspicious attachments.",
+            "Verify unexpected messages with the organisation directly."
+        };
+
+        // Random password tips
+        private List<string> passwordTips = new List<string>()
+        {
+            "Use strong, unique passwords for every account.",
+            "Avoid using personal information in passwords.",
+            "Consider using a password manager.",
+            "Enable multi-factor authentication whenever possible."
+        };
+
+        // Random scam tips
+        private List<string> scamTips = new List<string>()
+        {
+            "Scammers often create urgency to pressure victims.",
+            "Never send money to someone you have not verified.",
+            "Be suspicious of deals that seem too good to be true.",
+            "Always verify requests for personal information."
+        };
 
         public ResponseHandler GetResponseHandler()
         {
             return GetResponse;
         }
 
-        // 🧠 MAIN LOGIC
         public string GetResponse(string input)
         {
             input = input.ToLower().Trim();
 
-            // 😟 SENTIMENT (UPGRADED)
+            // Sentiment Detection
             if (input.Contains("worried") || input.Contains("scared"))
             {
-                return "It's okay to feel that way. Let me help you.\n\n" +
-                       "🔐 Tip: Never click unknown links in emails.\n" +
-                       "Always verify the sender before responding.";
+                return "It's understandable to feel worried. Here is a cybersecurity tip: Never click links from unknown senders and always verify requests for personal information.";
             }
 
             if (input.Contains("confused") || input.Contains("not sure"))
-                return "No problem — I’ll explain it simply.";
+            {
+                return "No problem. I'll explain things in a simpler way. Cybersecurity is all about protecting yourself and your information online.";
+            }
 
             if (input.Contains("frustrated"))
-                return "Let’s go step by step together.";
+            {
+                return "I understand your frustration. Let's work through it together one step at a time.";
+            }
 
-            // 👋 GREETING
+            // Greeting
             if (input.Contains("hello") || input.Contains("hi"))
-                return "Hello! Ask me about phishing, passwords, privacy, scams or malware.";
+            {
+                return "Hello! You can ask me about phishing, passwords, scams, privacy, or malware.";
+            }
 
-            // 🔐 COLLECTION LOOKUP
+            // Random Responses
+            if (input.Contains("phishing"))
+            {
+                return phishingTips[random.Next(phishingTips.Count)];
+            }
+
+            if (input.Contains("password"))
+            {
+                return passwordTips[random.Next(passwordTips.Count)];
+            }
+
+            if (input.Contains("scam"))
+            {
+                return scamTips[random.Next(scamTips.Count)];
+            }
+
+            // Dictionary Responses
             foreach (var item in responses)
             {
                 if (input.Contains(item.Key))
@@ -55,7 +100,7 @@ namespace CyberSecurityBotGUI
                 }
             }
 
-            return "Try asking about phishing, passwords, privacy, scams or malware.";
+            return "I’m not sure I understand. Try asking about phishing, passwords, scams, privacy, or malware.";
         }
     }
 }
